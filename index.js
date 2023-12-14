@@ -118,8 +118,6 @@ $(document).ready(function () {
 		let audio = new Audio('./spin_audio.mp3');
 		let audioClaps = new Audio('./claps_audio.mp3');
 
-		audio.play();
-		audio.loop = true;
 		audio.addEventListener(
 			'ended',
 			function () {
@@ -144,8 +142,10 @@ $(document).ready(function () {
 					$('.action_reset').css('pointer-events', 'auto');
 				}, 7000);
 				if (countDraw === 1) {
+					console.log('audio.paused', audio.paused);
 					if (audio.paused) {
 						audio.play();
+						audio.loop = true;
 					}
 					$('.action_draw').text('Quay lần 2');
 				} else if (countDraw === 2) {
