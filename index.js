@@ -154,8 +154,6 @@ $(document).ready(function () {
 
 		// reset click
 		$('.action_reset').on('click', function () {
-			audio.pause();
-			audio.play();
 			audioClaps.pause();
 			countDraw = 0;
 			$('.action_draw').text('Quay lần 1');
@@ -171,7 +169,6 @@ $(document).ready(function () {
 		// save click
 		$('.action_save').on('click', function () {
 			if (numberFinal?.length === 3) {
-				audio.pause();
 				audioClaps.play();
 				$('.modal-loading').css('display', 'flex');
 				const htmlModalCodeItem = numberFinal
@@ -206,8 +203,6 @@ $(document).ready(function () {
 
 		// close modal click
 		$('.close_modal_container').on('click', function () {
-			audio.pause();
-			audio.play();
 			audioClaps.pause();
 			countDraw = 0;
 			$('.modal-loading').css('display', 'none');
