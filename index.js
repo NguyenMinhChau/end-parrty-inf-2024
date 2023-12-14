@@ -120,8 +120,8 @@ $(document).ready(function () {
 
 		audio.play();
 		audio.addEventListener('ended', function () {
-			this.currentTime = 0;
-			this.play();
+			audio.currentTime = 0;
+			audio.play();
 		});
 
 		// hook start button
