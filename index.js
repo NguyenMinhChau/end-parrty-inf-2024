@@ -142,10 +142,6 @@ $(document).ready(function () {
 					$('.action_draw').text('Quay lần 2');
 					let audio = new Audio('./spin_audio.mp3');
 					audio.play();
-					let audioRing = new Audio('./ring_audio.mp3');
-					setTimeout(() => {
-						audioRing.pause();
-					}, 7000);
 				} else if (countDraw === 2) {
 					$('.action_draw').text('Quay lần 3');
 				} else {
