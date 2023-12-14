@@ -116,7 +116,6 @@ $(document).ready(function () {
 		createSlots($('#ring3'));
 		createSlots($('#ring4'));
 		let audio = new Audio('./spin_audio.mp3');
-		let audioRing = new Audio('./ring_audio.mp3');
 		let audioClaps = new Audio('./claps_audio.mp3');
 
 		audio.play();
@@ -148,18 +147,8 @@ $(document).ready(function () {
 						audioRing.pause();
 					}, 7000);
 				} else if (countDraw === 2) {
-					let audioRing = new Audio('./ring_audio.mp3');
-					audioRing.play();
-					setTimeout(() => {
-						audioRing.pause();
-					}, 7000);
 					$('.action_draw').text('Quay lần 3');
 				} else {
-					let audioRing = new Audio('./ring_audio.mp3');
-					audioRing.play();
-					setTimeout(() => {
-						audioRing.pause();
-					}, 7000);
 					$('.action_draw').css('display', 'none');
 					$('.action_save').css('display', 'flex');
 					$('.action_reset').css('display', 'flex');
@@ -169,7 +158,6 @@ $(document).ready(function () {
 
 		// reset click
 		$('.action_reset').on('click', function () {
-			audioRing.pause();
 			audioClaps.pause();
 			countDraw = 0;
 			$('.action_draw').text('Quay lần 1');
@@ -185,7 +173,7 @@ $(document).ready(function () {
 		// save click
 		$('.action_save').on('click', function () {
 			if (numberFinal?.length === 3) {
-				audioRing.pause();
+				audio.pause();
 				audioClaps.play();
 				$('.modal-loading').css('display', 'flex');
 				const htmlModalCodeItem = numberFinal
@@ -220,8 +208,7 @@ $(document).ready(function () {
 
 		// close modal click
 		$('.close_modal_container').on('click', function () {
-			audioRing.play();
-			audio.pause();
+			audio.play();
 			audioClaps.pause();
 			countDraw = 0;
 			$('.modal-loading').css('display', 'none');
