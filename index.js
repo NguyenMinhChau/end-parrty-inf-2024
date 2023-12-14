@@ -119,10 +119,15 @@ $(document).ready(function () {
 		let audioClaps = new Audio('./claps_audio.mp3');
 
 		audio.play();
-		audio.addEventListener('ended', function () {
-			audio.currentTime = 0;
-			audio.play();
-		});
+		audio.loop = true;
+		audio.addEventListener(
+			'ended',
+			function () {
+				this.currentTime = 0;
+				this.play();
+			},
+			false,
+		);
 
 		// hook start button
 		$('.action_draw').on('click', function () {
