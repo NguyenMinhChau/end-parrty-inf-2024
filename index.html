@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Chương trình tất niên INF 2024</title>
+		<link rel="icon" href="./favicon-16x16.png" type="image/png" />
+		<meta property="og:image" content="./fpt-logo.png" />
+		<meta
+			name="description"
+			content="FPT Telecom - Chương trình tất niên INF 2024"
+		/>
+		<link rel="stylesheet" href="index.css" />
+		<script
+			src="https://kit.fontawesome.com/cc3041f69f.js"
+			crossorigin="anonymous"
+		></script>
+		<script
+			src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+			type="text/javascript"
+		></script>
+	</head>
+	<body>
+		<div id="stage" class="perspective-on">
+			<div class="dial_container">
+				<div class="rotate_container">
+					<div id="rotate">
+						<div id="ring1" class="ring"></div>
+						<div id="ring2" class="ring"></div>
+						<div id="ring3" class="ring"></div>
+						<div id="ring4" class="ring"></div>
+						<div id="ring5" class="ring"></div>
+					</div>
+				</div>
+				<div class="action_container">
+					<div class="action_btn action_draw">Quay lần 1</div>
+					<div class="action_btn action_save">Lưu kết quả</div>
+					<div class="action_btn action_reset">Reset</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-loading">
+			<div class="modal-content">
+				<div class="close_modal_container">
+					<i class="fa-solid fa-xmark"></i>
+				</div>
+				<div class="header_modal_content">
+					Chúc mừng chủ nhân mang số dự thưởng
+				</div>
+				<div class="modal_code_container"></div>
+				<div class="header_modal_description">
+					<span>Đã trúng một phần quà là</span>
+					<span class="product"></span>
+				</div>
+				<img
+					loading="lazy"
+					src="./fpt-logo.png"
+					alt="logo"
+					style="width: 100%; max-width: 100px; object-fit: contain"
+				/>
+			</div>
+		</div>
+		<script src="index.js"></script>
+	</body>
+</html>
