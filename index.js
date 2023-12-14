@@ -144,7 +144,9 @@ $(document).ready(function () {
 					$('.action_reset').css('pointer-events', 'auto');
 				}, 7000);
 				if (countDraw === 1) {
-					audio.play();
+					if (audio.paused) {
+						audio.play();
+					}
 					$('.action_draw').text('Quay lần 2');
 				} else if (countDraw === 2) {
 					$('.action_draw').text('Quay lần 3');
