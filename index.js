@@ -145,7 +145,11 @@ $(document).ready(function () {
 				}, 7000);
 				if (countDraw === 1) {
 					let audio = new Audio('./spin_audio.mp3');
-					audio.play();
+					if (audio.paused) {
+						audio.play();
+					} else {
+						return;
+					}
 					$('.action_draw').text('Quay lần 2');
 				} else if (countDraw === 2) {
 					$('.action_draw').text('Quay lần 3');
