@@ -165,9 +165,6 @@ $(document).ready(function () {
 			$('.action_draw').css('display', 'flex');
 			$('.action_save').css('display', 'none');
 			$('.action_reset').css('display', 'none');
-			$('#ring2').attr('class', 'ring');
-			$('#ring3').attr('class', 'ring');
-			$('#ring4').attr('class', 'ring');
 			numberFinal = '';
 		});
 
@@ -215,9 +212,6 @@ $(document).ready(function () {
 			$('.action_draw').css('display', 'flex');
 			$('.action_save').css('display', 'none');
 			$('.action_reset').css('display', 'none');
-			$('#ring2').attr('class', 'ring');
-			$('#ring3').attr('class', 'ring');
-			$('#ring4').attr('class', 'ring');
 			numberFinal = '';
 		});
 	});
