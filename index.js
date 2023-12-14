@@ -154,6 +154,7 @@ $(document).ready(function () {
 
 		// reset click
 		$('.action_reset').on('click', function () {
+			audio.pause();
 			audio.play();
 			audioClaps.pause();
 			countDraw = 0;
@@ -205,6 +206,7 @@ $(document).ready(function () {
 
 		// close modal click
 		$('.close_modal_container').on('click', function () {
+			audio.pause();
 			audio.play();
 			audioClaps.pause();
 			countDraw = 0;
