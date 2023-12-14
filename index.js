@@ -139,9 +139,9 @@ $(document).ready(function () {
 					$('.action_reset').css('pointer-events', 'auto');
 				}, 7000);
 				if (countDraw === 1) {
-					$('.action_draw').text('Quay lần 2');
 					let audio = new Audio('./spin_audio.mp3');
 					audio.play();
+					$('.action_draw').text('Quay lần 2');
 				} else if (countDraw === 2) {
 					$('.action_draw').text('Quay lần 3');
 				} else {
