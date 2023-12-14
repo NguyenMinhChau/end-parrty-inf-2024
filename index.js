@@ -154,6 +154,7 @@ $(document).ready(function () {
 
 		// reset click
 		$('.action_reset').on('click', function () {
+			audio.play();
 			audioClaps.pause();
 			countDraw = 0;
 			$('.action_draw').text('Quay lần 1');
