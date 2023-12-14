@@ -123,6 +123,7 @@ $(document).ready(function () {
 			countDraw++;
 			if (countDraw <= 3) {
 				var timer = 3;
+				spin(timer);
 				$('.action_draw').css('pointer-events', 'none');
 				$('.action_save').css('pointer-events', 'none');
 				$('.action_reset').css('pointer-events', 'none');
@@ -131,20 +132,22 @@ $(document).ready(function () {
 					$('.action_save').css('pointer-events', 'auto');
 					$('.action_reset').css('pointer-events', 'auto');
 				}, 7000);
-				spin(timer);
 				if (countDraw === 1) {
 					$('.action_draw').text('Quay lần 2');
+					let audio = new Audio('./spin_audio.mp3');
 					audio.play();
 					setTimeout(() => {
 						audio.pause();
 					}, 7000);
 				} else if (countDraw === 2) {
+					let audio = new Audio('./spin_audio.mp3');
 					audio.play();
 					setTimeout(() => {
 						audio.pause();
 					}, 7000);
 					$('.action_draw').text('Quay lần 3');
 				} else {
+					let audio = new Audio('./spin_audio.mp3');
 					audio.play();
 					setTimeout(() => {
 						audio.pause();
