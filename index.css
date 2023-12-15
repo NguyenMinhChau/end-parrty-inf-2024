@@ -19,10 +19,10 @@ body {
 		#c850c0 46%,
 		#ffcc70 100%
 	); */
-	/* background-image: url('./bg_image.png');
+	background-image: url('./bg_image.png');
 	background-repeat: no-repeat;
 	background-size: auto 100%;
-	background-position: center; */
+	background-position: center;
 }
 
 .perspective-on {
