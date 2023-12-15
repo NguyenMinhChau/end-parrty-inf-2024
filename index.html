@@ -5,10 +5,11 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Chương trình tất niên INF 2024</title>
 		<link rel="icon" href="./favicon-16x16.png" type="image/png" />
-		<meta
+		<!-- use jquery -->
+		<!-- <meta
 			http-equiv="Content-Security-Policy"
 			content="upgrade-insecure-requests"
-		/>
+		/> -->
 		<meta property="og:image" content="./fpt-logo.png" />
 		<meta
 			name="description"
@@ -23,11 +24,17 @@
 			src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
 			type="text/javascript"
 		></script>
+		<script type="text/javascript" src="index.js"></script>
 	</head>
 	<body>
 		<div id="stage" class="perspective-on">
 			<div class="dial_container">
 				<div class="rotate_container">
+					<div class="description_container">
+						<span
+							>Phần thưởng: <span class="prize_name"></span
+						></span>
+					</div>
 					<div id="rotate">
 						<div id="ring1" class="ring"></div>
 						<div id="ring2" class="ring"></div>
@@ -37,6 +44,12 @@
 					</div>
 				</div>
 				<div class="action_container">
+					<div class="action_btn action_choose_prize">
+						Chọn phần thưởng
+					</div>
+					<div class="action_btn action_re_choose_prize">
+						Chọn lại phần thưởng
+					</div>
 					<div class="action_btn action_draw">Quay lần 1</div>
 					<div class="action_btn action_save">Lưu kết quả</div>
 					<div class="action_btn action_reset">Reset</div>
@@ -64,6 +77,35 @@
 				/>
 			</div>
 		</div>
-		<script src="index.js"></script>
+		<div class="modal-prize">
+			<div class="modal-prize-content">
+				<div class="close_modal_prize_container">
+					<i class="fa-solid fa-xmark"></i>
+				</div>
+				<div class="header_modal_prize_content">
+					Danh sách các giải thưởng
+				</div>
+				<div class="modal_prize_container">
+					<table class="table">
+						<thead>
+							<tr>
+								<th style="width: 50px">STT</th>
+								<th style="width: 200px">Giải thưởng</th>
+								<th style="width: 100px">Code</th>
+								<th style="width: 50px">Chọn</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+				<div class="action_btn action_submit_prize">Xác nhận</div>
+				<img
+					loading="lazy"
+					src="./fpt-logo.png"
+					alt="logo"
+					style="width: 100%; max-width: 100px; object-fit: contain"
+				/>
+			</div>
+		</div>
 	</body>
 </html>
