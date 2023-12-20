@@ -62,6 +62,11 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 	};
 
+	function removeDuplicates(array) {
+		const result = array.filter((a, b) => array.indexOf(a) === b);
+		return result;
+	}
+
 	// fetch data user
 	fetch(
 		'http://1.52.246.101:4000/v1/icdp-backend-mobile/ct-tat-nien/get-users',
@@ -73,33 +78,46 @@ document.addEventListener('DOMContentLoaded', function () {
 			return res.json();
 		})
 		.then((res) => {
-			var LIST_NUMBER_HUNDRED = res.payload.map((item) => {
-				return parseInt(item.code / 100);
-			});
-			var LIST_NUMBER_TEN = res.payload.map((item) => {
-				return parseInt((item.code % 100) / 10);
-			});
-			var LIST_NUMBER_UNIT = res.payload.map((item) => {
-				return parseInt(item.code % 10);
-			});
-			var LIST_NUMBER_HUNDRED_NO_FILL = res.payload.map((item) => {
-				return parseInt(item.code / 100);
-			});
-			var LIST_NUMBER_TEN_NO_FILL = res.payload.map((item) => {
-				return parseInt((item.code % 100) / 10);
-			});
-			var LIST_NUMBER_UNIT_NO_FILL = res.payload.map((item) => {
-				return parseInt(item.code % 10);
-			});
+			var LIST_NUMBER_HUNDRED = removeDuplicates(
+				res.payload.map((item) => {
+					return parseInt(item.code / 100);
+				}),
+			);
+			var LIST_NUMBER_TEN = removeDuplicates(
+				res.payload.map((item) => {
+					return parseInt((item.code % 100) / 10);
+				}),
+			);
+			var LIST_NUMBER_UNIT = removeDuplicates(
+				res.payload.map((item) => {
+					return parseInt(item.code % 10);
+				}),
+			);
+			var LIST_NUMBER_HUNDRED_NO_FILL = removeDuplicates(
+				res.payload.map((item) => {
+					return parseInt(item.code / 100);
+				}),
+			);
+			var LIST_NUMBER_TEN_NO_FILL = removeDuplicates(
+				res.payload.map((item) => {
+					return parseInt((item.code % 100) / 10);
+				}),
+			);
+			var LIST_NUMBER_UNIT_NO_FILL = removeDuplicates(
+				res.payload.map((item) => {
+					return parseInt(item.code % 10);
+				}),
+			);
 
 			const fillArray = (arr) => {
-				while (arr.length > 0 && arr.length < SLOTS_PER_REEL) {
+				while (arr.length < SLOTS_PER_REEL) {
 					arr = arr.concat(arr);
 				}
 				return arr;
 			};
 
 			LIST_NUMBER_HUNDRED = fillArray(LIST_NUMBER_HUNDRED);
+
 			LIST_NUMBER_TEN = fillArray(LIST_NUMBER_TEN);
 			LIST_NUMBER_UNIT = fillArray(LIST_NUMBER_UNIT);
 
