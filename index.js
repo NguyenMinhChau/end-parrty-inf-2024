@@ -1,46 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
-	const actionDraw = document.querySelector('.action_draw');
-	const actionSave = document.querySelector('.action_save');
-	const actionReset = document.querySelector('.action_reset');
-	const actionChoosePrize = document.querySelector('.action_choose_prize');
-	const actionSubmitPrize = document.querySelector('.action_submit_prize');
-	const actionReChoosePrize = document.querySelector(
-		'.action_re_choose_prize',
-	);
-
-	const ring2Element = document.querySelector('#ring2');
-	const ring3Element = document.querySelector('#ring3');
-	const ring4Element = document.querySelector('#ring4');
-
-	const modalLoading = document.querySelector('.modal-loading');
-	const modalPrize = document.querySelector('.modal-prize');
-	const rotatedContainer = document.querySelector('.rotate_container');
-	const modalCodeContainer = document.querySelector('.modal_code_container');
-
-	const closeModalElement = document.querySelector('.close_modal_container');
-	const closeModalPrizeElement = document.querySelector(
-		'.close_modal_prize_container',
-	);
-	const productElement = document.querySelector('.product');
-	const tableBodyElement = document.querySelector('.table tbody');
-	const prizeNameElement = document.querySelector('.prize_name');
-
-	const SLOTS_PER_REEL = 12;
-	const REEL_RADIUS = 150;
-	let prize = null;
-	let prizeData = null;
-	let countDraw = 0;
-	let numberOne = '';
-	let numberTwo = '';
-	let numberThree = '';
-	var LIST_TEST = [];
-
-	actionDraw.style.display = 'none';
-	actionSave.style.display = 'none';
-	actionReset.style.display = 'none';
-	rotatedContainer.style.display = 'none';
-	actionReChoosePrize.style.display = 'none';
-
+(function () {
 	//! Call API get data info
 	const fetchAPI = async ({
 		method = 'POST',
@@ -61,144 +19,57 @@ document.addEventListener('DOMContentLoaded', function () {
 				onError(err);
 			});
 	};
-
-	function removeDuplicates(array) {
-		const result = array.filter((a, b) => array.indexOf(a) === b);
-		return result;
-	}
-
-	// fetch data user
 	fetch(
 		'http://1.52.246.101:4000/v1/icdp-backend-mobile/ct-tat-nien/get-users',
-		{
-			method: 'GET',
-		},
+		{ method: 'GET' },
 	)
 		.then((res) => {
 			return res.json();
 		})
 		.then((res) => {
-			var LIST_NUMBER_HUNDRED = removeDuplicates(
-				res.payload.map((item) => {
-					return parseInt(item.code / 100);
-				}),
-			);
-			var LIST_NUMBER_TEN = removeDuplicates(
-				res.payload.map((item) => {
-					return parseInt((item.code % 100) / 10);
-				}),
-			);
-			var LIST_NUMBER_UNIT = removeDuplicates(
-				res.payload.map((item) => {
-					return parseInt(item.code % 10);
-				}),
-			);
-			var LIST_NUMBER_HUNDRED_NO_FILL = removeDuplicates(
-				res.payload.map((item) => {
-					return parseInt(item.code / 100);
-				}),
-			);
-			var LIST_NUMBER_TEN_NO_FILL = removeDuplicates(
-				res.payload.map((item) => {
-					return parseInt((item.code % 100) / 10);
-				}),
-			);
-			var LIST_NUMBER_UNIT_NO_FILL = removeDuplicates(
-				res.payload.map((item) => {
-					return parseInt(item.code % 10);
-				}),
-			);
+			function extractUniqueDigits(data) {
+				const uniqueDigits = new Set(); // Sử dụng Set để đảm bảo không có số nào trùng lặp
 
-			const fillArray = (arr) => {
-				while (arr.length < SLOTS_PER_REEL) {
-					arr = arr.concat(arr);
-				}
-				return arr;
-			};
+				data.forEach((item) => {
+					if (item?.code) {
+						// Trích xuất số từ trường "code"
+						item?.code
+							?.split('')
+							?.forEach((digit) => uniqueDigits?.add(digit));
+					}
 
-			LIST_NUMBER_HUNDRED = fillArray(LIST_NUMBER_HUNDRED);
+					// Trích xuất số từ các trường con của "digits"
+					['tram', 'chuc', 'donVi'].forEach((key) => {
+						if (item?.digits[key]) {
+							item?.digits[key]
+								?.split('')
+								?.forEach((digit) => uniqueDigits?.add(digit));
+						}
+					});
+				});
 
-			LIST_NUMBER_TEN = fillArray(LIST_NUMBER_TEN);
-			LIST_NUMBER_UNIT = fillArray(LIST_NUMBER_UNIT);
-
-			// console.log('LIST_NUMBER_HUNDRED: ', LIST_NUMBER_HUNDRED);
-			// console.log('LIST_NUMBER_TEN: ', LIST_NUMBER_TEN);
-			// console.log('LIST_NUMBER_UNIT: ', LIST_NUMBER_UNIT);
-
-			function createSlots(ring, list) {
-				var slotAngle = 360 / SLOTS_PER_REEL;
-
-				for (var i = 0; i < SLOTS_PER_REEL; i++) {
-					var slot = document.createElement('div');
-
-					slot.className = 'slot';
-
-					var transform =
-						'rotateX(' +
-						slotAngle * i +
-						'deg) translateZ(' +
-						REEL_RADIUS +
-						'px)';
-
-					slot.style.transform = transform;
-
-					var seed = 0;
-					var content = document.createElement('p');
-					content.textContent = list[i] % 10;
-					slot.appendChild(content);
-
-					// add the poster to the row
-					ring.appendChild(slot);
-				}
+				return Array.from(uniqueDigits); // Chuyển Set thành mảng và trả về
 			}
 
-			function getSeed(listNoFill) {
-				return Math.floor(Math.random() * listNoFill.length);
-			}
-
-			function getTextContentP(ringElement) {
-				const spinClass = ringElement.className;
-				const seedTextContent = parseInt(spinClass.slice(10)) + 4;
-				const slots = ringElement.querySelectorAll('.slot');
-				// console.log('seedTextContent: ', seedTextContent);
-				// console.log('slots: ', slots);
-				// console.log('slots[seedTextContent]: ', slots[seedTextContent]);
-				const textContentP = slots[seedTextContent].querySelector('p');
-				// console.log('textContentP: ', textContentP?.textContent);
-				return textContentP?.textContent?.toString();
-			}
-
-			function spin(timer, ring, list, listNoFill) {
-				var oldSeed = -1;
-				var oldClass = document.querySelector(ring).className;
-				if (oldClass.length > 4) {
-					oldSeed = parseInt(oldClass.slice(10));
-				}
-				var seed = getSeed(listNoFill);
-				while (oldSeed == seed) {
-					seed = getSeed(listNoFill);
-				}
-
-				var ringElement = document.querySelector(ring);
-				ringElement.style.animation =
-					'back-spin 1s, spin-' + seed + ' ' + (timer + 0.5) + 's';
-				ringElement.className = 'ring spin-' + seed;
-
-				if (ring === '#ring2') {
-					numberOne = getTextContentP(ring2Element);
-				} else if (ring === '#ring3') {
-					numberTwo = getTextContentP(ring3Element);
-				} else {
-					numberThree = getTextContentP(ring4Element);
-				}
-			}
-
-			createSlots(ring2Element, LIST_NUMBER_HUNDRED);
-			createSlots(ring3Element, LIST_NUMBER_TEN);
-			createSlots(ring4Element, LIST_NUMBER_UNIT);
-
+			let prize = null;
+			let prizeData = null;
 			let audio = new Audio('./spin_audio.mp3');
+			let audioRing = new Audio('./ring_audio.mp3');
 			let audioClaps = new Audio('./claps_audio.mp3');
+			const LIST_USER = res.payload?.map((item, index) => {
+				if (
+					item?.status === 'CHECKED_IN' &&
+					item?.status !== 'PRIZED'
+				) {
+					return item;
+				}
+			});
+			const LIST_NUMBER_ONE = extractUniqueDigits(LIST_USER);
+			const LIST_USER_PRIZE = res.payload?.map((item, index) => {
+				if (item?.status === 'PRIZED') {
+					return item;
+				}
+			});
 
 			audio.addEventListener(
 				'ended',
@@ -209,47 +80,65 @@ document.addEventListener('DOMContentLoaded', function () {
 				false,
 			);
 
-			actionDraw.addEventListener('click', function () {
-				countDraw++;
-				if (countDraw <= 3) {
-					var timer = 3;
-					actionDraw.style.pointerEvents = 'none';
-					actionSave.style.pointerEvents = 'none';
-					actionReset.style.pointerEvents = 'none';
-					setTimeout(() => {
-						actionDraw.style.pointerEvents = 'auto';
-						actionSave.style.pointerEvents = 'auto';
-						actionReset.style.pointerEvents = 'auto';
-					}, 3000);
-					if (countDraw === 1) {
-						spin(
-							timer,
-							'#ring2',
-							LIST_NUMBER_HUNDRED,
-							LIST_NUMBER_HUNDRED_NO_FILL,
-						);
-						actionDraw.textContent = 'Quay lần 2';
-					} else if (countDraw === 2) {
-						spin(
-							timer,
-							'#ring3',
-							LIST_NUMBER_TEN,
-							LIST_NUMBER_TEN_NO_FILL,
-						);
-						actionDraw.textContent = 'Quay lần 3';
-					} else {
-						spin(
-							timer,
-							'#ring4',
-							LIST_NUMBER_UNIT,
-							LIST_NUMBER_UNIT_NO_FILL,
-						);
-						actionDraw.style.display = 'none';
-						actionSave.style.display = 'flex';
-						actionReset.style.display = 'flex';
-					}
-				}
+			// console.log(
+			// 	'LIST_USER_PRIZE: ',
+			// 	LIST_USER_PRIZE.filter((x) => x),
+			// );
+
+			document.querySelector('#reseter').style.display = 'none';
+			document.querySelector('.save_result').style.display = 'none';
+
+			const doors = document.querySelectorAll('.door');
+
+			document
+				.querySelector('.save_result')
+				.addEventListener('click', save);
+			document.querySelector('#spinner').addEventListener('click', spin);
+			document.querySelector('#reseter').addEventListener('click', () => {
+				init();
+				handleReset();
 			});
+			document
+				.querySelector('.award')
+				.addEventListener('click', openAward);
+			document
+				.querySelector('.trophy')
+				.addEventListener('click', openListUser);
+			document
+				.querySelector('.close_modal.prize')
+				.addEventListener('click', closeModalPrize);
+			document
+				.querySelector('.close_modal.user')
+				.addEventListener('click', closeModalUser);
+			document
+				.querySelector('.close_modal_notifi')
+				.addEventListener('click', closeModalNotification);
+			document
+				.querySelector('.action_submit_prize')
+				.addEventListener('click', submitPrize);
+
+			document
+				.querySelector('.modal_overlay.notification')
+				.addEventListener('click', (e) => {
+					e.stopPropagation();
+					closeModalNotification();
+				});
+
+			document
+				.querySelector('.modal_container_notification')
+				.addEventListener('click', (e) => {
+					e.stopPropagation();
+					document
+						.querySelector('.modal_overlay.notification')
+						.classList.add('show');
+				});
+
+			document
+				.querySelector('.close_modal_notifi')
+				.addEventListener('click', (e) => {
+					e.stopPropagation();
+					closeModalNotification();
+				});
 
 			// GET LIST PRIZE
 			fetchAPI({
@@ -269,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
 												<td style="padding: 12px">
 													<input
 														type="radio"
+                                                        class="prize"
 														name="prize"
 														value=${_id}
 														data-prize-name="${prizeName}"
@@ -279,9 +169,14 @@ document.addEventListener('DOMContentLoaded', function () {
 								`;
 						})
 						.join('');
-					tableBodyElement.innerHTML = htmlTableBody;
+					document.querySelector('.table tbody.prize').innerHTML =
+						res?.payload?.length > 0
+							? htmlTableBody
+							: `<tr style="text-align: center">
+                                                <td style="padding: 12px" colspan="4">Không có dữ liệu</td>
+                                            </tr>`;
 					const inputRadioElements = document.querySelectorAll(
-						'input[type="radio"]',
+						'input[type="radio"].prize',
 					);
 					inputRadioElements.forEach((inputRadioElement) => {
 						inputRadioElement.addEventListener(
@@ -298,113 +193,278 @@ document.addEventListener('DOMContentLoaded', function () {
 				},
 			});
 
-			actionSubmitPrize.addEventListener('click', function () {
-				if (prize) {
-					rotatedContainer.style.display = 'flex';
-					modalPrize.style.display = 'none';
-					actionChoosePrize.style.display = 'none';
-					actionDraw.style.display = 'flex';
-					actionReChoosePrize.style.display = 'flex';
-					prizeNameElement.textContent = prizeData?.prizeName;
-					if (numberOne && numberTwo && numberThree) {
-						actionDraw.style.display = 'none';
-						actionSave.style.display = 'flex';
-						actionReset.style.display = 'flex';
+			// RENDER TABDLE USER
+			const htmlTableBodyUser = LIST_USER_PRIZE?.filter((x) => x)
+				.map((item, _idx) => {
+					const { email, code, status, timeCheckIn } = { ...item };
+					return `
+									<tr style="text-align: center">
+												<td style="padding: 12px">${_idx + 1}</td>
+												<td style="padding: 12px">${email}</td>
+												<td style="padding: 12px">
+													${code}
+												</td>
+											</tr>
+								`;
+				})
+				.join('');
+			document.querySelector('.table tbody.user').innerHTML =
+				LIST_USER_PRIZE?.filter((x) => x)?.length > 0
+					? htmlTableBodyUser
+					: `<tr style="text-align: center">
+                                                <td style="padding: 12px" colspan="3">Không có dữ liệu</td>
+                                            </tr>`;
+
+			function init(firstInit = true, groups = 1, duration = 1) {
+				for (const door of doors) {
+					if (firstInit) {
+						door.dataset.spinned = '0';
+					} else if (door.dataset.spinned === '1') {
+						return;
+					}
+
+					const boxes = door.querySelector('.boxes');
+					const boxesClone = boxes.cloneNode(false);
+					const pool = ['❓'];
+
+					if (!firstInit) {
+						const arr = [];
+						for (let n = 0; n < (groups > 0 ? groups : 1); n++) {
+							arr.push(...LIST_NUMBER_ONE);
+						}
+						pool.push(...shuffle(arr));
+
+						boxesClone.addEventListener(
+							'transitionstart',
+							function () {
+								door.dataset.spinned = '1';
+								this.querySelectorAll('.box').forEach((box) => {
+									box.style.filter = 'blur(1px)';
+								});
+							},
+							{ once: true },
+						);
+
+						boxesClone.addEventListener(
+							'transitionend',
+							function () {
+								this.querySelectorAll('.box').forEach(
+									(box, index) => {
+										box.style.filter = 'blur(0)';
+										if (index > 0) this.removeChild(box);
+									},
+								);
+							},
+							{ once: true },
+						);
+					}
+
+					for (let i = pool.length - 1; i >= 0; i--) {
+						const box = document.createElement('div');
+						box.classList.add('box');
+						box.style.width = door.clientWidth + 'px';
+						box.style.height = door.clientHeight + 'px';
+						box.textContent = pool[i];
+						boxesClone.appendChild(box);
+					}
+					boxesClone.style.transitionDuration = `${
+						duration > 0 ? duration : 1
+					}s`;
+					boxesClone.style.transform = `translateY(-${
+						door.clientHeight * (pool.length - 1)
+					}px)`;
+					door.replaceChild(boxesClone, boxes);
+				}
+			}
+
+			function handleReset() {
+				if (prizeData) {
+					prize = null;
+					prizeData = null;
+					document.querySelector('.name_prize').innerHTML = '';
+					document.querySelector('.name_text').innerHTML = ``;
+					document.querySelector('.email_text').innerHTML = ``;
+					document.querySelector('#reseter').style.display = 'none';
+					document.querySelector('.save_result').style.display =
+						'none';
+					document.querySelector('.award').style.display = 'block';
+				}
+			}
+
+			async function spin() {
+				if (LIST_NUMBER_ONE?.length > 0) {
+					if (audio.paused) {
+						audio.play();
+						audio.loop = true;
+					}
+					document.querySelector('.award').style.display = 'none';
+
+					if (prizeData) {
+						init(false, 25, 15);
+
+						let result = '';
+
+						for (const door of doors) {
+							const boxes = door.querySelector('.boxes');
+							const duration = parseInt(
+								boxes.style.transitionDuration,
+							);
+							boxes.style.transform = 'translateY(0)';
+							await new Promise((resolve) =>
+								setTimeout(resolve, duration * 100),
+							);
+							const box = boxes.querySelector('.box');
+							if (box.textContent === '❓') {
+								return;
+							}
+							result += box.textContent;
+						}
+
+						setTimeout(() => {
+							// tìm trong LIST_USER PRIZE để lấy ra user có code === result
+							const user = LIST_USER_PRIZE.find(
+								(item) => item?.code === result,
+							);
+							document.querySelector('.award').style.display =
+								'none';
+
+							if (user) {
+								document.querySelector(
+									'.name_text',
+								).innerHTML = `<span class="full_name">Nguyễn Minh Châu</span> -
+								<span class="deparment">INF HO</span>`;
+								document.querySelector(
+									'.email_text',
+								).innerHTML = `Email: <span class="email_user">${
+									user?.email || 'Không tìm thấy email'
+								}</span>`;
+								document.querySelector(
+									'.save_result',
+								).style.display = 'block';
+							} else {
+								document.querySelector(
+									'.name_text',
+								).innerHTML = `<span class="full_name">Không tìm thấy người trúng thưởng!</span>`;
+								document.querySelector(
+									'.email_text',
+								).innerHTML = ``;
+								document.querySelector(
+									'.save_result',
+								).style.display = 'none';
+							}
+						}, 13000);
+					} else {
+						// document
+						// 	.querySelector('.modal_overlay.notification')
+						// 	.classList.add('show');
+						// const htmlTextNotification =
+						// 	'<p style="text-align: center;">Vui lòng chọn phần thưởng trước khi quay thưởng. Xin cảm ơn!</p>';
+						// document.querySelector('.model_content_text').innerHTML =
+						// 	htmlTextNotification;
+						document
+							.querySelector('.modal_overlay.prize')
+							.classList.add('show');
+						document.querySelector('.award').style.display =
+							'block';
 					}
 				} else {
-					alert('Vui lòng chọn giải thưởng');
+					document
+						.querySelector('.modal_overlay.notification')
+						.classList.add('show');
+					const htmlTextNotification =
+						'<p style="text-align: center;">Chưa có nhân sự CHECK IN, vui lòng chờ thêm, xin cảm ơn!</p>';
+					document.querySelector('.model_content_text').innerHTML =
+						htmlTextNotification;
 				}
-			});
+			}
 
-			actionReChoosePrize.addEventListener('click', function () {
-				modalPrize.style.display = 'flex';
-			});
-
-			actionChoosePrize.addEventListener('click', function () {
-				if (audio.paused) {
-					audio.play();
-					audio.loop = true;
+			async function save() {
+				let result = '';
+				for (const door of doors) {
+					const boxes = door.querySelector('.boxes');
+					const box = boxes.querySelector('.box');
+					if (box.textContent === '❓') {
+						return;
+					}
+					result += box.textContent;
 				}
-				modalPrize.style.display = 'flex';
-			});
 
-			closeModalPrizeElement.addEventListener('click', function () {
-				modalPrize.style.display = 'none';
-			});
-
-			actionReset.addEventListener('click', function () {
-				actionDraw.textContent = 'Quay lần 1';
-				actionDraw.style.display = 'flex';
-				actionSave.style.display = 'none';
-				actionReset.style.display = 'none';
-				ring2Element.className = 'ring';
-				ring3Element.className = 'ring';
-				ring4Element.className = 'ring';
-				modalCodeContainer.innerHTML = '';
-				audioClaps.pause();
-				countDraw = 0;
-				numberOne = '';
-				numberTwo = '';
-				numberThree = '';
-			});
-
-			actionSave.addEventListener('click', function () {
 				fetchAPI({
-					url: 'http://1.52.246.101:4000/v1/icdp-backend-mobile/ct-tat-nien/set-prize',
+					url: `http://1.52.246.101:4000/v1/icdp-backend-mobile/ct-tat-nien/set-prize?prizeId=${prize}&code=${result}`,
 					method: 'POST',
-					body: {
-						prizeId: prize,
-						code: `${numberOne}${numberTwo}${numberThree}`,
-					},
+					body: {},
 					onSuccess: (res) => {
-						console.log(res);
 						if (res?.success) {
 							audioClaps.play();
-							modalLoading.style.display = 'flex';
-							const htmlModalCodeItem = `
-									<div class="modal_code_item">${numberOne}</div>
-									<div class="modal_code_item">${numberTwo}</div>
-									<div class="modal_code_item">${numberThree}</div>
-								`;
-							modalCodeContainer.innerHTML = htmlModalCodeItem;
-							productElement.textContent = prizeData?.prizeName;
 						} else {
-							alert(
+							document
+								.querySelector('.modal_overlay.notification')
+								.classList.add('show');
+							const htmlTextNotification = `<p style="text-align: center;">${
 								res?.errors?.[0]?.message ||
-									res?.errors?.message,
-							);
+								res?.errors?.message
+							}</p>`;
+							document.querySelector(
+								'.model_content_text',
+							).innerHTML = htmlTextNotification;
 						}
 					},
 					onError: (err) => {
 						console.log(err);
 					},
 				});
-			});
+				console.log(result);
+			}
 
-			closeModalElement.addEventListener('click', function () {
-				actionChoosePrize.style.display = 'flex';
-				rotatedContainer.style.display = 'none';
-				actionReChoosePrize.style.display = 'none';
-				modalLoading.style.display = 'none';
-				actionDraw.textContent = 'Quay lần 1';
-				actionDraw.style.display = 'none';
-				actionSave.style.display = 'none';
-				actionReset.style.display = 'none';
-				ring2Element.className = 'ring';
-				ring3Element.className = 'ring';
-				ring4Element.className = 'ring';
-				modalCodeContainer.innerHTML = '';
-				const inputRadioElements = document.querySelectorAll(
-					'input[type="radio"]',
-				);
-				inputRadioElements.forEach((inputRadioElement) => {
-					inputRadioElement.checked = false;
-				});
-				audioClaps.pause();
-				countDraw = 0;
-				numberOne = '';
-				numberTwo = '';
-				numberThree = '';
-			});
+			function shuffle([...arr]) {
+				let m = arr.length;
+				while (m) {
+					const i = Math.floor(Math.random() * m--);
+					[arr[m], arr[i]] = [arr[i], arr[m]];
+				}
+				return arr;
+			}
+
+			function openAward() {
+				document
+					.querySelector('.modal_overlay.prize')
+					.classList.add('show');
+			}
+
+			function openListUser() {
+				document
+					.querySelector('.modal_overlay.user')
+					.classList.add('show');
+			}
+
+			function closeModalPrize() {
+				document
+					.querySelector('.modal_overlay.prize')
+					.classList.remove('show');
+			}
+
+			function closeModalUser() {
+				document
+					.querySelector('.modal_overlay.user')
+					.classList.remove('show');
+			}
+
+			function closeModalNotification() {
+				document
+					.querySelector('.modal_overlay.notification')
+					.classList.remove('show');
+			}
+
+			function submitPrize() {
+				if (prizeData) {
+					document.querySelector('#reseter').style.display = 'block';
+					document.querySelector(
+						'.name_prize',
+					).innerHTML = `Phần thưởng ${prizeData.prizeName} sẽ thuộc về`;
+				}
+				closeModalPrize();
+			}
+
+			init();
 		});
-});
+})();
