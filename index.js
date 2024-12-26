@@ -1,5 +1,4 @@
-// const host_be_localhost = '1.52.246.101:4000';
-const host_be_localhost = 'localhost:4000';
+const host_be = 'https://icdpmobile.fpt.net'; // http://1.52.246.101:4000
 (function () {
 	//! Call API get data info
 	const fetchAPI = async ({
@@ -21,10 +20,9 @@ const host_be_localhost = 'localhost:4000';
 				onError(err);
 			});
 	};
-	fetch(
-		`http://${host_be_localhost}/v1/icdp-backend-mobile/ct-tat-nien/get-users`,
-		{ method: 'GET' },
-	)
+	fetch(`${host_be}/v1/icdp-backend-mobile/ct-tat-nien/get-users`, {
+		method: 'GET',
+	})
 		.then((res) => {
 			return res.json();
 		})
@@ -35,9 +33,7 @@ const host_be_localhost = 'localhost:4000';
 				data.forEach((item) => {
 					if (item?.code) {
 						// Trích xuất số từ trường "code"
-						item?.code
-							?.split('')
-							?.forEach((digit) => uniqueDigits?.add(digit));
+						item?.code?.split('')?.forEach((digit) => uniqueDigits?.add(digit));
 					}
 
 					// Trích xuất số từ các trường con của "digits"
@@ -61,22 +57,24 @@ const host_be_localhost = 'localhost:4000';
 			let audioRing = new Audio('./ring_audio.mp3');
 			let audioClaps = new Audio('./Win.mp3');
 			const LIST_USER = res.payload?.map((item, index) => {
-				if (
-					item?.status === 'CHECKED_IN' &&
-					item?.status !== 'PRIZED'
-				) {
+				if (item?.status === 'CHECKED_IN' && item?.status !== 'PRIZED') {
 					return item;
 				}
 			});
 			const LIST_NUMBER_ONE = extractUniqueDigits(LIST_USER);
 			const LIST_CODE = LIST_USER?.map((item) => item?.code);
-			const LIST_USER_PRIZE = res.payload?.map((item, index) => {
-				if (item?.status === 'PRIZED') {
-					return item;
-				}
-			}).sort((a,b) => {
-				return (a?.prize?.block - b?.prize?.block) || `${a?.prize?.prizeName}`.localeCompare(`${b?.prize?.prizeName}`)
-			});
+			const LIST_USER_PRIZE = res.payload
+				?.map((item, index) => {
+					if (item?.status === 'PRIZED') {
+						return item;
+					}
+				})
+				.sort((a, b) => {
+					return (
+						a?.prize?.block - b?.prize?.block ||
+						`${a?.prize?.prizeName}`.localeCompare(`${b?.prize?.prizeName}`)
+					);
+				});
 
 			const randomCode = LIST_CODE?.filter((x) => x)?.[
 				Math.floor(Math.random() * LIST_CODE?.filter((x) => x)?.length)
@@ -101,20 +99,14 @@ const host_be_localhost = 'localhost:4000';
 
 			const doors = document.querySelectorAll('.door');
 
-			document
-				.querySelector('.save_result')
-				.addEventListener('click', save);
+			document.querySelector('.save_result').addEventListener('click', save);
 			document.querySelector('#spinner').addEventListener('click', spin);
 			document.querySelector('#reseter').addEventListener('click', () => {
 				init();
 				handleReset();
 			});
-			document
-				.querySelector('.award')
-				.addEventListener('click', openAward);
-			document
-				.querySelector('.trophy')
-				.addEventListener('click', openListUser);
+			document.querySelector('.award').addEventListener('click', openAward);
+			document.querySelector('.trophy').addEventListener('click', openListUser);
 			document
 				.querySelector('.close_modal.prize')
 				.addEventListener('click', closeModalPrize);
@@ -166,11 +158,7 @@ const host_be_localhost = 'localhost:4000';
 						'.modal_container.prize',
 					).children;
 					for (var i = 0; i < elements.length; i++) {
-						if (
-							!elements[i].classList.contains(
-								'action_submit_prize',
-							)
-						) {
+						if (!elements[i].classList.contains('action_submit_prize')) {
 							elements[i].classList.add('show');
 						}
 					}
@@ -179,9 +167,7 @@ const host_be_localhost = 'localhost:4000';
 				.querySelector('.modal_container.user')
 				.addEventListener('click', (e) => {
 					e.stopPropagation();
-					document
-						.querySelector('.modal_overlay.user')
-						.classList.add('show');
+					document.querySelector('.modal_overlay.user').classList.add('show');
 				});
 
 			document
@@ -205,7 +191,7 @@ const host_be_localhost = 'localhost:4000';
 
 			// GET LIST PRIZE
 			fetchAPI({
-				url: `http://${host_be_localhost}/v1/icdp-backend-mobile/ct-tat-nien/get-prizes`,
+				url: `${host_be}/v1/icdp-backend-mobile/ct-tat-nien/get-prizes`,
 				method: 'GET',
 				onSuccess: (res) => {
 					const htmlTableBody = res.payload
@@ -241,62 +227,53 @@ const host_be_localhost = 'localhost:4000';
 						'input[type="radio"].prize',
 					);
 					inputRadioElements.forEach((inputRadioElement) => {
-						inputRadioElement.addEventListener(
-							'change',
-							function (e) {
-								prize = e.target.value;
-								fetchAPI({
-									method: 'GET',
-									url: `http://${host_be_localhost}/v1/icdp-backend-mobile/ct-tat-nien/random-code-by-prize?prizeId=${prize}`,
-									onSuccess: (res) => {
-										if (res?.success) {
-											prizeData = {
-												prizeName:
-													e.target.dataset.prizeName,
-												prizeCode:
-													e.target.dataset.prizeCode,
-											};
-											document.querySelector(
-												'.action_submit_prize',
-											).style.display = 'block';
-											// codeGetAPI =
-											// 	res?.payload?.code ||
-											// 	randomCode;
-										} else {
-											isSubmitPrize = false;
-											prize = null;
-											prizeData = null;
-											document.querySelector(
-												'.action_submit_prize',
-											).style.display = 'none';
-											document
-												.querySelector(
-													'.modal_overlay.notification',
-												)
-												.classList.add('show');
-											const htmlTextNotification = `<p style="text-align: center;">${
-												res?.errors?.[0]?.message ||
-												res?.errors?.message ||
-												'Vui lòng thử lại sau'
-											}</p>`;
-											document.querySelector(
-												'.model_content_text',
-											).innerHTML = htmlTextNotification;
-										}
-									},
-									onError: (err) => {
+						inputRadioElement.addEventListener('change', function (e) {
+							prize = e.target.value;
+							fetchAPI({
+								method: 'GET',
+								url: `${host_be}/v1/icdp-backend-mobile/ct-tat-nien/random-code-by-prize?prizeId=${prize}`,
+								onSuccess: (res) => {
+									if (res?.success) {
+										prizeData = {
+											prizeName: e.target.dataset.prizeName,
+											prizeCode: e.target.dataset.prizeCode,
+										};
+										document.querySelector(
+											'.action_submit_prize',
+										).style.display = 'block';
+										// codeGetAPI =
+										// 	res?.payload?.code ||
+										// 	randomCode;
+									} else {
 										isSubmitPrize = false;
 										prize = null;
 										prizeData = null;
-										console.log(err);
-									},
-								});
-							},
-						);
+										document.querySelector(
+											'.action_submit_prize',
+										).style.display = 'none';
+										document
+											.querySelector('.modal_overlay.notification')
+											.classList.add('show');
+										const htmlTextNotification = `<p style="text-align: center;">${
+											res?.errors?.[0]?.message ||
+											res?.errors?.message ||
+											'Vui lòng thử lại sau'
+										}</p>`;
+										document.querySelector('.model_content_text').innerHTML =
+											htmlTextNotification;
+									}
+								},
+								onError: (err) => {
+									isSubmitPrize = false;
+									prize = null;
+									prizeData = null;
+									console.log(err);
+								},
+							});
+						});
 					});
 				},
 			});
-			
 
 			// RENDER TABLE USER
 			const htmlTableBodyUser = LIST_USER_PRIZE?.filter((x) => x)
@@ -367,12 +344,10 @@ const host_be_localhost = 'localhost:4000';
 						boxesClone.addEventListener(
 							'transitionend',
 							function () {
-								this.querySelectorAll('.box').forEach(
-									(box, index) => {
-										box.style.filter = 'blur(0)';
-										if (index > 0) this.removeChild(box);
-									},
-								);
+								this.querySelectorAll('.box').forEach((box, index) => {
+									box.style.filter = 'blur(0)';
+									if (index > 0) this.removeChild(box);
+								});
 							},
 							{ once: true },
 						);
@@ -404,12 +379,9 @@ const host_be_localhost = 'localhost:4000';
 					document.querySelector('.name_text').innerHTML = ``;
 					document.querySelector('.email_text').innerHTML = ``;
 					document.querySelector('#reseter').style.display = 'none';
-					document.querySelector('.save_result').style.display =
-						'none';
+					document.querySelector('.save_result').style.display = 'none';
 					document.querySelector('.award').style.display = 'block';
-					document
-						.querySelector('.phao_giay')
-						.classList.remove('show');
+					document.querySelector('.phao_giay').classList.remove('show');
 					audioClaps.pause();
 				}
 			}
@@ -423,13 +395,12 @@ const host_be_localhost = 'localhost:4000';
 				if (prizeData) {
 					fetchAPI({
 						method: 'GET',
-						url: `http://${host_be_localhost}/v1/icdp-backend-mobile/ct-tat-nien/random-code-by-prize?prizeId=${prize}`,
+						url: `${host_be}/v1/icdp-backend-mobile/ct-tat-nien/random-code-by-prize?prizeId=${prize}`,
 						onSuccess: (res) => {
 							if (res?.success) {
 								isSubmitPrize = true;
-								document.querySelector(
-									'.action_submit_prize',
-								).style.display = 'block';
+								document.querySelector('.action_submit_prize').style.display =
+									'block';
 								codeGetAPI = res?.payload?.code || randomCode;
 							} else {
 								isSubmitPrize = false;
@@ -439,21 +410,16 @@ const host_be_localhost = 'localhost:4000';
 									.querySelector('.modal_overlay.prize')
 									.classList.add('show');
 								document
-									.querySelector(
-										'.modal_overlay.notification',
-									)
+									.querySelector('.modal_overlay.notification')
 									.classList.add('show');
 								const htmlTextNotification = `<p style="text-align: center;">${
 									res?.errors?.[0]?.message ||
 									res?.errors?.message ||
 									'Vui lòng thử lại sau'
 								}</p>`;
-								document.querySelector(
-									'.model_content_text',
-								).innerHTML = htmlTextNotification;
-								document.querySelector(
-									'.name_prize',
-								).innerHTML = '';
+								document.querySelector('.model_content_text').innerHTML =
+									htmlTextNotification;
+								document.querySelector('.name_prize').innerHTML = '';
 								for (const [index, door] of doors?.entries()) {
 									const boxes = door.querySelector('.boxes');
 
@@ -486,9 +452,7 @@ const host_be_localhost = 'localhost:4000';
 						audio.loop = true;
 					}
 					// document.querySelector('.award').style.display = 'none';
-					document
-						.querySelector('.phao_giay')
-						.classList.remove('show');
+					document.querySelector('.phao_giay').classList.remove('show');
 					if (prizeData && isSubmitPrize) {
 						init(false, 25, 15);
 
@@ -496,9 +460,7 @@ const host_be_localhost = 'localhost:4000';
 
 						for (const [index, door] of doors?.entries()) {
 							const boxes = door.querySelector('.boxes');
-							const duration = parseInt(
-								boxes.style.transitionDuration,
-							);
+							const duration = parseInt(boxes.style.transitionDuration);
 							boxes.style.transform = 'translateY(0)';
 							await new Promise((resolve) =>
 								setTimeout(resolve, duration * 100),
@@ -519,17 +481,13 @@ const host_be_localhost = 'localhost:4000';
 						}
 						setTimeout(() => {
 							const user = LIST_USER.find((item) => {
-								if (
-									`${item?.code}`.toString() ===
-									`${codeGetAPI}`.toString()
-								) {
+								if (`${item?.code}`.toString() === `${codeGetAPI}`.toString()) {
 									return item;
 								}
 							});
 							// document.querySelector('.award').style.display =
 							// 	'none';
-							document.querySelector('#spinner').style.display =
-								'block';
+							document.querySelector('#spinner').style.display = 'block';
 
 							if (user) {
 								// document.querySelector(
@@ -544,33 +502,22 @@ const host_be_localhost = 'localhost:4000';
 								}</span> - <span class="department" style="font-size: 25px;">${
 									user?.phongBan || 'N/A'
 								}</span>`;
-								document.querySelector(
-									'.save_result',
-								).style.display = 'block';
-								document
-									.querySelector('.phao_giay')
-									.classList.add('show');
-								document.querySelector(
-									'.save_result',
-								).style.display = 'block';
+								document.querySelector('.save_result').style.display = 'block';
+								document.querySelector('.phao_giay').classList.add('show');
+								document.querySelector('.save_result').style.display = 'block';
 							} else {
 								document.querySelector(
 									'.name_text',
 								).innerHTML = `<span class="full_name">Không tìm thấy người trúng thưởng!</span>`;
-								document.querySelector(
-									'.email_text',
-								).innerHTML = ``;
-								document.querySelector(
-									'.save_result',
-								).style.display = 'none';
+								document.querySelector('.email_text').innerHTML = ``;
+								document.querySelector('.save_result').style.display = 'none';
 							}
 						}, 13000);
 					} else {
 						document
 							.querySelector('.modal_overlay.prize')
 							.classList.add('show');
-						document.querySelector('.award').style.display =
-							'block';
+						document.querySelector('.award').style.display = 'block';
 					}
 				} else {
 					document
@@ -595,7 +542,7 @@ const host_be_localhost = 'localhost:4000';
 				}
 
 				fetchAPI({
-					url: `http://${host_be_localhost}/v1/icdp-backend-mobile/ct-tat-nien/set-prize?prizeId=${prize}&code=${codeGetAPI}`,
+					url: `${host_be}/v1/icdp-backend-mobile/ct-tat-nien/set-prize?prizeId=${prize}&code=${codeGetAPI}`,
 					method: 'POST',
 					body: {},
 					onSuccess: (res) => {
@@ -605,12 +552,9 @@ const host_be_localhost = 'localhost:4000';
 								.classList.add('show');
 							const htmlTextNotification =
 								'<p style="text-align: center;">Lưu kết quả thành công!</p>';
-							document.querySelector(
-								'.model_content_text',
-							).innerHTML = htmlTextNotification;
-							document.querySelector(
-								'.save_result',
-							).style.display = 'none';
+							document.querySelector('.model_content_text').innerHTML =
+								htmlTextNotification;
+							document.querySelector('.save_result').style.display = 'none';
 							isSubmitPrize = false;
 						} else {
 							document
@@ -621,12 +565,9 @@ const host_be_localhost = 'localhost:4000';
 								res?.errors?.message ||
 								'Vui lòng thử lại sau'
 							}</p>`;
-							document.querySelector(
-								'.model_content_text',
-							).innerHTML = htmlTextNotification;
-							document.querySelector(
-								'.save_result',
-							).style.display = 'block';
+							document.querySelector('.model_content_text').innerHTML =
+								htmlTextNotification;
+							document.querySelector('.save_result').style.display = 'block';
 						}
 					},
 					onError: (err) => {
@@ -648,27 +589,19 @@ const host_be_localhost = 'localhost:4000';
 
 			function openAward() {
 				isSubmitPrize = false;
-				document
-					.querySelector('.modal_overlay.prize')
-					.classList.add('show');
+				document.querySelector('.modal_overlay.prize').classList.add('show');
 			}
 
 			function openListUser() {
-				document
-					.querySelector('.modal_overlay.user')
-					.classList.add('show');
+				document.querySelector('.modal_overlay.user').classList.add('show');
 			}
 
 			function closeModalPrize() {
-				document
-					.querySelector('.modal_overlay.prize')
-					.classList.remove('show');
+				document.querySelector('.modal_overlay.prize').classList.remove('show');
 			}
 
 			function closeModalUser() {
-				document
-					.querySelector('.modal_overlay.user')
-					.classList.remove('show');
+				document.querySelector('.modal_overlay.user').classList.remove('show');
 			}
 
 			function closeModalNotification() {
@@ -683,9 +616,7 @@ const host_be_localhost = 'localhost:4000';
 					// document.querySelector(
 					// 	'.name_prize',
 					// ).innerHTML = `${prizeData.prizeName}`;
-					document.querySelector(
-						'.name_prize',
-					).innerHTML = 'GIẢI SUPPER VIP';
+					document.querySelector('.name_prize').innerHTML = 'GIẢI SUPPER VIP';
 					closeModalPrize();
 					isSubmitPrize = true;
 				} else {
@@ -705,21 +636,25 @@ const host_be_localhost = 'localhost:4000';
 })();
 
 const updateUserPrize = () => {
-	return fetch(
-		`http://${host_be_localhost}/v1/icdp-backend-mobile/ct-tat-nien/get-users`,
-		{ method: 'GET' },
-	)
+	return fetch(`${host_be}/v1/icdp-backend-mobile/ct-tat-nien/get-users`, {
+		method: 'GET',
+	})
 		.then((res) => {
 			return res.json();
 		})
 		.then((res) => {
-			const LIST_USER_PRIZE = res.payload?.map((item, index) => {
-				if (item?.status === 'PRIZED') {
-					return item;
-				}
-			}).sort((a,b) => {
-				return (a?.prize?.block - b?.prize?.block) || `${a?.prize?.prizeName}`.localeCompare(`${b?.prize?.prizeName}`)
-			});;
+			const LIST_USER_PRIZE = res.payload
+				?.map((item, index) => {
+					if (item?.status === 'PRIZED') {
+						return item;
+					}
+				})
+				.sort((a, b) => {
+					return (
+						a?.prize?.block - b?.prize?.block ||
+						`${a?.prize?.prizeName}`.localeCompare(`${b?.prize?.prizeName}`)
+					);
+				});
 			const htmlTableBodyUser = LIST_USER_PRIZE?.filter((x) => x)
 				.map((item, _idx) => {
 					const {
