@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Chương trình tất niên INF 2024</title>
+		<link rel="icon" href="./favicon-16x16.png" type="image/png" />
+		<meta property="og:image" content="./fpt-logo.png" />
+		<meta
+			name="description"
+			content="FPT Telecom - Chương trình tất niên INF 2024"
+		/>
+		<link rel="stylesheet" href="index.css" />
+		<script
+			src="https://kit.fontawesome.com/cc3041f69f.js"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<div id="app">
+			<p
+				style="
+					font-weight: bold;
+					text-align: center;
+					font-size: 15.5px;
+					margin: 0;
+					margin-bottom: 10px;
+				"
+				class="name_prize"
+			></p>
+			<p
+				class="animate-charcter name_text"
+				style="
+					font-weight: bold;
+					text-align: center;
+					font-size: 20px;
+					margin: 0;
+				"
+			>
+				<!-- <span class="full_name">Nguyễn Minh Châu</span> -
+				<span class="deparment">INF HO</span> -->
+			</p>
+			<p
+				class="animate-charcter email_text"
+				style="
+					font-weight: bold;
+					text-align: center;
+					font-size: 20px;
+					margin: 0;
+					text-transform: uppercase;
+				"
+			>
+				<!-- Email: <span class="email_user">chaunm27@fpt.com</span> -->
+			</p>
+			<div class="doors">
+				<div class="phao_giay"></div>
+				<div
+					style="
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						width: 100%;
+						margin-top: 10px;
+					"
+				>
+					<div class="door">
+						<div class="boxes">
+							<!-- <div class="box">?</div> -->
+						</div>
+					</div>
+
+					<div class="door">
+						<div class="boxes">
+							<!-- <div class="box">?</div> -->
+						</div>
+					</div>
+
+					<div class="door">
+						<div class="boxes">
+							<!-- <div class="box">?</div> -->
+						</div>
+					</div>
+				</div>
+				<!-- <p style="font-weight: bold; text-align: center; margin: 0">
+					<i>
+						Chúc bạn một năm mới vui vẻ, hạnh phúc, thành công và
+						gặp thật nhiều may mắn nhé 🍀 INF yêu bạn ❤
+					</i>
+				</p> -->
+			</div>
+
+			<div class="buttons">
+				<button id="spinner">Bắt đầu</button>
+				<button id="spinner" class="save_result">Lưu kết quả</button>
+				<button id="reseter">Reset</button>
+			</div>
+
+			<div class="actions">
+				<div class="award">
+					<i class="fa-solid fa-gift"></i>
+				</div>
+				<div class="trophy">
+					<i class="fa-solid fa-trophy"></i>
+				</div>
+			</div>
+		</div>
+		<!-- LIST PRIZE -->
+		<div class="modal_overlay prize">
+			<div class="modal_container prize">
+				<div class="header_modal">
+					<div class="title_modal">Danh sách giải thưởng</div>
+					<div class="close_modal prize">
+						<i class="fa-solid fa-xmark"></i>
+					</div>
+				</div>
+				<div class="modal_prize_container">
+					<table class="table" style="height: 70vh">
+						<thead>
+							<tr>
+								<th style="width: 50px">Block</th>
+								<th style="width: 300px">Giải thưởng</th>
+								<th style="width: 50px">Chọn</th>
+							</tr>
+						</thead>
+						<tbody class="prize"></tbody>
+					</table>
+				</div>
+				<div
+					style="
+						width: 100%;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					"
+				>
+					<button
+						style="color: #0000009a; width: 330px; background-color: #cccccc9a"
+						class="action_submit_prize"
+					>
+						Xác nhận phần thưởng
+					</button>
+				</div>
+				<div
+					style="
+						width: 100%;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					"
+				>
+					<img
+						loading="lazy"
+						src="./fpt-logo.png"
+						alt="logo"
+						style="width: 100px; height: 100px; object-fit: contain"
+					/>
+				</div>
+			</div>
+		</div>
+
+		<!-- LIST USER -->
+		<div class="modal_overlay user">
+			<div class="modal_container user">
+				<div class="header_modal">
+					<div class="title_modal">Danh sách nguời trúng thưởng</div>
+					<div class="close_modal user">
+						<i class="fa-solid fa-xmark"></i>
+					</div>
+				</div>
+				<div class="modal_prize_container">
+					<table class="table">
+						<thead>
+							<tr>
+								<th style="width: 80px">Block</th>
+								<th style="width: 150px">Họ và tên</th>
+								<th style="width: 150px">Email</th>
+								<th style="width: 150px">Phòng ban</th>
+								<th style="width: 80px">Code</th>
+								<th style="width: 200px">Phần thưởng</th>
+							</tr>
+						</thead>
+						<tbody class="user"></tbody>
+					</table>
+				</div>
+
+				<div
+					style="
+						width: 100%;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					"
+				>
+					<img
+						loading="lazy"
+						src="./fpt-logo.png"
+						alt="logo"
+						style="width: 100px; height: 100px; object-fit: contain"
+					/>
+				</div>
+			</div>
+		</div>
+
+		<!-- MODEL NOTIFICATION -->
+		<div class="modal_overlay notification">
+			<div class="modal_container_notification">
+				<div
+					style="display: flex; align-items: center; justify-content: flex-end"
+				>
+					<div class="close_modal_notifi">
+						<i class="fa-solid fa-xmark"></i>
+					</div>
+				</div>
+				<div class="modal_content_container">
+					<div class="model_content_text"></div>
+					<!-- <div
+						style="
+							width: 100%;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+						"
+					>
+						<img
+							loading="lazy"
+							src="./fpt-logo.png"
+							alt="logo"
+							style="
+								width: 100%;
+								max-width: 100px;
+								object-fit: contain;
+							"
+						/>
+					</div> -->
+				</div>
+			</div>
+		</div>
+		<script src="index.js"></script>
+	</body>
+</html>
