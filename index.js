@@ -36,8 +36,9 @@ const host_be = 'https://icdpmobile.fpt.net'; // http://1.52.246.101:4000
 						item?.code?.split('')?.forEach((digit) => uniqueDigits?.add(digit));
 					}
 
+					// ! CHANGE QUANTITY NUMBER
 					// Trích xuất số từ các trường con của "digits"
-					['tram', 'chuc', 'donVi'].forEach((key) => {
+					['nghin', 'tram', 'chuc', 'donVi'].forEach((key) => {
 						if (item?.digits[key]) {
 							item?.digits[key]
 								?.split('')
@@ -613,10 +614,10 @@ const host_be = 'https://icdpmobile.fpt.net'; // http://1.52.246.101:4000
 			function submitPrize() {
 				if (prizeData) {
 					// document.querySelector('#reseter').style.display = 'block';
-					// document.querySelector(
-					// 	'.name_prize',
-					// ).innerHTML = `${prizeData.prizeName}`;
-					document.querySelector('.name_prize').innerHTML = 'GIẢI SUPPER VIP';
+					document.querySelector(
+						'.name_prize',
+					).innerHTML = `${prizeData.prizeName}`;
+					// document.querySelector('.name_prize').innerHTML = 'GIẢI SUPPER VIP';
 					closeModalPrize();
 					isSubmitPrize = true;
 				} else {
