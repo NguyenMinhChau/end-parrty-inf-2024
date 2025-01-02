@@ -38,7 +38,7 @@ const host_be = 'https://icdpmobile.fpt.net'; // http://1.52.246.101:4000
 
 					// ! CHANGE QUANTITY NUMBER
 					// Trích xuất số từ các trường con của "digits"
-					['nghin', 'tram', 'chuc', 'donVi'].forEach((key) => {
+					['tram', 'chuc', 'donVi'].forEach((key) => {
 						if (item?.digits[key]) {
 							item?.digits[key]
 								?.split('')
