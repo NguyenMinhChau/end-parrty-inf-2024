@@ -6,12 +6,12 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	/* background-color: #13263f; */
-	position: relative;
+	background-color: #13263f;
+	/* position: relative;
 	background-image: url('./bg_image_02.gif');
 	background-repeat: no-repeat;
 	background-size: 100% 100%;
-	background-position: center;
+	background-position: center; */
 }
 
 #app {
